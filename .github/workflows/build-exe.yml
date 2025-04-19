@@ -21,11 +21,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyqt5 pyaudio numpy pywin32 pyinstaller
 
-      - name: Compile to EXE (修正 PowerShell 换行符)
+      - name: Compile to EXE (正确的 PowerShell 换行格式)
         run: |
-          pyinstaller --onefile --windowed `  # PowerShell 中使用反引号换行
-                      --name "Silence_Grows_Trees" `  # 生成的 EXE 文件名
-                      --add-data "fonts;fonts" `  # 包含字体文件夹（Windows 分号分隔）
+          pyinstaller --onefile --windowed `
+                      --name "Silence_Grows_Trees" `
+                      --add-data "fonts;fonts" `
                       main.py
 
       - name: Upload EXE
