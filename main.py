@@ -46,7 +46,8 @@ class SettingsDialog(QDialog):
 class GardenWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         # 设置花园窗口大小为400x300
         self.setGeometry(0, 0, 400, 300)
         # 添加圆角样式
