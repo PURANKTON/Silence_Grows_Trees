@@ -1,10 +1,12 @@
+# © 2025 MicroFire, All rights reserved.
+# 萌ICP备20250202号
+
 import sys
 import time
 import threading
 import pyaudio
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QDialog, \
-    QGridLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QDialog, QGridLayout
 from PyQt5.QtGui import QFont, QIcon, QFontDatabase
 from PyQt5.QtCore import Qt
 from datetime import datetime
@@ -32,6 +34,11 @@ class SettingsDialog(QDialog):
         layout.addWidget(self.input2, 1, 1)
         layout.addWidget(self.label3, 2, 0)
         layout.addWidget(self.input3, 2, 1)
+
+        # 添加保存按钮
+        self.save_button = QPushButton("保存")
+        self.save_button.clicked.connect(self.accept)
+        layout.addWidget(self.save_button, 3, 0, 1, 2)
 
         self.setLayout(layout)
 
@@ -133,7 +140,7 @@ class MainWindow(QWidget):
         layout.addLayout(button_layout)
 
         # 分贝显示
-        self.decibel_label = QLabel("当前分贝: 0")
+        self.decibel_label = QLabel("当前分贝: 000")
         if font_id != -1:
             font = QFont(font_families[0], 16)
             self.decibel_label.setFont(font)
@@ -151,6 +158,15 @@ class MainWindow(QWidget):
         button_layout.addStretch(1)
         button_layout.addWidget(self.settings_icon)
         layout.addLayout(button_layout)
+
+        # 添加版权声明
+        copyright_label = QLabel("© 2025 MicroFire, All rights reserved.\n萌ICP备20250202号")
+        if font_id != -1:
+            font = QFont(font_families[0], 8)
+            copyright_label.setFont(font)
+        copyright_label.setAlignment(Qt.AlignCenter)
+        copyright_label.setStyleSheet("color: #666666;")
+        layout.addWidget(copyright_label)
 
         self.setLayout(layout)
 
@@ -175,12 +191,41 @@ class MainWindow(QWidget):
     def monitor_sound(self):
         p = pyaudio.PyAudio()
         stream = p.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
+        EPSILON = 1e-10
         while self.recording:
-            data = stream.read(1024)
-            audio_data = np.frombuffer(data, dtype=np.int16)
-            rms = np.sqrt(np.mean(np.square(audio_data)))
-            decibel = 20 * np.log10(rms) if rms > 0 else 0
-            self.decibel_label.setText(f"当前分贝: {decibel:.2f}")
+            try:
+                data = stream.read(1024)
+                # 将音频数据类型转换为 np.int32
+                audio_data = np.frombuffer(data, dtype=np.int16).astype(np.int32)
+                if len(audio_data) == 0:
+                    print("警告：读取到空的音频数据")
+                    continue
+            except Exception as e:
+                print(f"读取音频数据时出错: {e}")
+                continue
+
+            print(f"音频数据最小值: {np.min(audio_data)}, 最大值: {np.max(audio_data)}")
+
+            squared_audio = np.square(audio_data)
+            mean_square = np.mean(squared_audio)
+            print(f"均方值: {mean_square}")
+
+            # 检查 mean_square 是否为负数或 NaN
+            if np.isnan(mean_square) or mean_square < 0:
+                print(f"警告：均方值异常，值为 {mean_square}")
+                mean_square = 0
+
+            is_invalid = (np.abs(mean_square) < EPSILON) | np.isnan(mean_square) | (mean_square < 0)
+            rms = np.where(is_invalid, 0, np.sqrt(mean_square))
+
+            if rms > 0:
+                decibel = 20 * np.log10(rms)
+                print(f"计算得到的分贝值: {decibel}")
+            else:
+                decibel = 0
+            # 格式化分贝显示为三位数
+            decibel_str = f"{decibel:.0f}".zfill(3)
+            self.decibel_label.setText(f"当前分贝: {decibel_str}")
 
             if decibel < self.decibel_threshold_grow:
                 if self.start_time == 0:
