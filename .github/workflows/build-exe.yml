@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyqt5 pyaudio numpy pywin32 pyinstaller
 
-      - name: Compile to EXE (正确的 PowerShell 换行格式)
+      - name: Compile to EXE
         run: |
           pyinstaller --onefile --windowed `
                       --name "Silence_Grows_Trees" `
@@ -31,5 +31,5 @@ jobs:
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: silence-garden-exe
+          name: Silence_Grows_Trees
           path: dist/Silence_Grows_Trees.exe
