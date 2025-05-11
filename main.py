@@ -1,4 +1,4 @@
-# © 2025 MicroFire, All rights reserved.
+# © 2025 Cynara, All rights reserved.
 # 萌ICP备20250202号
 import sys
 import time
@@ -225,6 +225,13 @@ class MainWindow(QWidget):
         button_layout.addWidget(self.over_button)
         button_layout.addWidget(self.settings_icon)
         layout.addLayout(button_layout)
+
+        # 底部信息
+        lbl_footer = QLabel("© 2025 Cynara, All rights reserved.\n萌ICP备20250202号")
+        lbl_footer.setFont(QFont("Microsoft YaHei", 8))
+        lbl_footer.setAlignment(Qt.AlignCenter)
+        lbl_footer.setStyleSheet("color: #666666;")
+        layout.addWidget(lbl_footer)
 
         self.setLayout(layout)
 
