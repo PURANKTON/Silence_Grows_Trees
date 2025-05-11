@@ -19,7 +19,7 @@ class SettingsDialog(QDialog):
         layout = QGridLayout()
         self.label1 = QLabel("安静长出小树分贝:")
         self.input1 = QLineEdit()
-        self.input1.setText("55")
+        self.input1.setText("57")
         self.label2 = QLabel("嘈杂消失小树分贝:")
         self.input2 = QLineEdit()
         self.input2.setText("60")
@@ -129,7 +129,7 @@ class MainWindow(QWidget):
         self.big_trees = 0
         self.palm_trees = 0
         self.recording = False
-        self.decibel_threshold_grow = 55
+        self.decibel_threshold_grow = 57
         self.decibel_threshold_shrink = 60
         self.start_time = 0
         self.garden_window = GardenWindow()
